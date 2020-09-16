@@ -14,8 +14,8 @@ resource "aws_launch_template" "green_web_template" {
   instance_type          = var.instance_type
   key_name               = var.key_name
   image_id               = data.aws_ami.linux-ami-id.id
-  vpc_security_group_ids = [aws_security_group.green_priv1_sg.id]
-  user_data              = base64encode(file("userdata.sh"))
+  vpc_security_group_ids = [aws_security_group.green_pub_sg.id]
+  user_data              = base64encode(file("web_userdata.sh"))
   lifecycle {
     create_before_destroy = false
   }
@@ -26,8 +26,6 @@ resource "aws_launch_template" "green_web_template" {
 
 # Autoscaling Group for the Web Servers (links to Zones and Target Groups)
 resource "aws_autoscaling_group" "green_web_asg" {
-  vpc_zone_identifier       = [aws_subnet.priv1_az1_subnet.id, aws_subnet.priv1_az2_subnet.id]
-  target_group_arns         = [aws_lb_target_group.green_web_tg.arn]
   name                      = "green-web-asg"
   max_size                  = "2"
   min_size                  = "1"
@@ -35,11 +33,13 @@ resource "aws_autoscaling_group" "green_web_asg" {
   health_check_grace_period = 300
   health_check_type         = "ELB"
   force_delete              = true
+  vpc_zone_identifier       = [aws_subnet.priv1_az1_subnet.id, aws_subnet.priv1_az2_subnet.id]
+  target_group_arns         = [aws_lb_target_group.green_web_tg.arn]
   launch_template {
     id      = aws_launch_template.green_web_template.id
     version = "$Latest"
   }
-
+  
   tag {
     key                 = "Name"
     value               = "green_web_asg"
@@ -62,6 +62,8 @@ resource "aws_lb_target_group" "green_web_tg" {
     unhealthy_threshold = 10
     timeout             = 7
     interval            = 10
+    port                = "traffic-port"
+    matcher             = "200-320"
   }
   tags = {
     Name = "green_web_tg"
@@ -74,7 +76,7 @@ resource "aws_lb" "green_web_alb" {
   internal           = false
   ip_address_type    = "ipv4"
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.green_priv1_sg.id]
+  security_groups    = [aws_security_group.green_pub_sg.id]
   subnets            = [aws_subnet.pub_az1_subnet.id, aws_subnet.pub_az2_subnet.id]
   tags = {
     Name = "green_web_alb"

@@ -163,7 +163,7 @@ resource "aws_network_acl_rule" "priv1_az1_inbound_range" {
   from_port      = 1024
   to_port        = 65535
   protocol       = "tcp"
-  cidr_block     = "10.0.0.0/16"
+  cidr_block     = "0.0.0.0/0"
 }
 
 # Ping access from VPC   

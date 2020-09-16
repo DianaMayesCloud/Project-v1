@@ -15,7 +15,7 @@ resource "aws_launch_template" "green_app_template" {
   key_name               = var.key_name
   image_id               = data.aws_ami.linux-ami-id.id
   vpc_security_group_ids = [aws_security_group.green_priv2_sg.id]
-  user_data              = base64encode(file("userdata.sh"))
+  user_data              = base64encode(file("app_userdata.sh"))
   lifecycle {
     create_before_destroy = false
   }

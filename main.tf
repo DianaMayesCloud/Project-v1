@@ -103,13 +103,13 @@ resource "aws_route_table_association" "priv2_az2_sub_assoc" {
 # Create Instance in the Public Subnet
 resource "aws_instance" "green_bastion" {
   ami                         = "ami-023e0c35fc414e78b"
-  instance_type               = "t2.nano"
+  instance_type               = var.instance_type
   subnet_id                   = aws_subnet.pub_az1_subnet.id
   security_groups             = [aws_security_group.green_pub_sg.id]
   associate_public_ip_address = true
   key_name                    = var.key_name
   #aws_key_pair  = aws_key_pair.deployer
-  user_data                   = file("userdata.sh")
+  user_data                   = file("app_userdata.sh")
   tags = {
     Name = "Green-Bastion"
   }
@@ -123,7 +123,7 @@ resource "aws_instance" "green_bastion" {
 # # Create Instance in the Private Subnet 
 # resource "aws_instance" "green_private_ec2" {
 #   ami                         = "ami-02354e95b39ca8dec"
-#   instance_type               = "t2.nano"
+#   instance_type               = "t2.micro"
 #   subnet_id                   = aws_subnet.priv1_az1_subnet.id
 #   security_groups             = [aws_security_group.green_priv1_sg.id]
 #   associate_public_ip_address = true
