@@ -19,7 +19,7 @@ resource "aws_internet_gateway" "green_igw" {
 
 # Create NAT EIP
 resource "aws_eip" "green_nat_eip" {
-  vpc = true
+  vpc                       = true
   associate_with_private_ip = "10.0.40.0"
 }
 # Create NAT Gateway
@@ -59,7 +59,7 @@ resource "aws_route" "green_pub_route" {
 resource "aws_route" "green_private_route" {
   route_table_id         = aws_route_table.green_private_rt.id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id             = aws_nat_gateway.green_nat_gw.id
+  nat_gateway_id         = aws_nat_gateway.green_nat_gw.id
 }
 
 # Make "green_default" Public Route Table your Main Route Table (rather than the one automatically created by AWS when launching the VPC)
@@ -71,12 +71,12 @@ resource "aws_main_route_table_association" "green_default" {
 #Associate Public route table with the Public Subnets 
 resource "aws_route_table_association" "pub_subassocaz1" {
   route_table_id = aws_route_table.green_pub_rt.id # associate this public RT
-  subnet_id      = aws_subnet.pub_az1_subnet.id   # with this Public Subnet in AZ1
+  subnet_id      = aws_subnet.pub_az1_subnet.id    # with this Public Subnet in AZ1
 }
 
 resource "aws_route_table_association" "pub_subassocaz2s" {
   route_table_id = aws_route_table.green_pub_rt.id # associate this public RT 
-  subnet_id      = aws_subnet.pub_az2_subnet.id   # with this Public Subnet in AZ1
+  subnet_id      = aws_subnet.pub_az2_subnet.id    # with this Public Subnet in AZ1
 }
 
 #Associate Private Route Table with the Private Subnets 
@@ -109,7 +109,7 @@ resource "aws_instance" "green_bastion" {
   associate_public_ip_address = true
   key_name                    = var.key_name
   #aws_key_pair  = aws_key_pair.deployer
-  user_data                   = file("app_userdata.sh")
+  user_data = file("app_userdata.sh")
   tags = {
     Name = "Green-Bastion"
   }

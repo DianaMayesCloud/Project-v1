@@ -39,13 +39,12 @@ resource "aws_autoscaling_group" "green_web_asg" {
     id      = aws_launch_template.green_web_template.id
     version = "$Latest"
   }
-  
+
   tag {
     key                 = "Name"
     value               = "green_web_asg"
     propagate_at_launch = "true"
   }
-
 }
 
 # Target Group -- web application tier (links to VPC)
@@ -56,13 +55,12 @@ resource "aws_lb_target_group" "green_web_tg" {
   protocol    = "HTTP"
   vpc_id      = aws_vpc.green_vpc.id
   health_check {
-    port                = 80
+    port                = "traffic-port"
     path                = "/"
     healthy_threshold   = 3
     unhealthy_threshold = 10
-    timeout             = 7
+    timeout             = 5
     interval            = 10
-    port                = "traffic-port"
     matcher             = "200-320"
   }
   tags = {
